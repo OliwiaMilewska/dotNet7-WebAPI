@@ -5,9 +5,17 @@ namespace WebApiPlayground.Data
 {
     public class WalksDbContext: DbContext
     {
-        public WalksDbContext(DbContextOptions dbContextOptions): base(dbContextOptions)
+        private readonly IConfiguration _configuration;
+
+        public WalksDbContext(DbContextOptions dbContextOptions, IConfiguration configuration) : base(dbContextOptions)
         {
-            
+            _configuration = configuration;
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
+            optionsBuilder.UseSqlServer(_configuration.GetConnectionString("WalksConnectionString"));
         }
 
         public DbSet<Difficulty> Difficulties { get; set; }

@@ -11,10 +11,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Add db context
-builder.Services.AddDbContext<WalksDbContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("WalksConnectionString"));
-});
+builder.Services.AddDbContext<WalksDbContext>();
 
 var app = builder.Build();
 
