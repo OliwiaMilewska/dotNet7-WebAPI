@@ -1,2 +1,2 @@
-# dotNet7-WebAPI
+# .Net 7 - Web API
 This repository served as my practice ground while mastering .Net 7 Web API.
