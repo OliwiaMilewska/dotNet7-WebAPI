@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using WebApiPlayground.Models.Domain;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace WebApiPlayground.Data
 {

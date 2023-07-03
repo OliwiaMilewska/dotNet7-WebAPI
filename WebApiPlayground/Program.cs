@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using WebApiPlayground.Data;
 
 var builder = WebApplication.CreateBuilder(args);
