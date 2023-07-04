@@ -1,4 +1,5 @@
 using WebApiPlayground.Data;
+using WebApiPlayground.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,9 @@ builder.Services.AddSwaggerGen();
 
 // Add db context
 builder.Services.AddDbContext<WalksDbContext>();
+
+// Add Repositories
+builder.Services.AddScoped<IRegionRepository, SqlRegionRepository>();
 
 var app = builder.Build();
 
