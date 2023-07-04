@@ -3,7 +3,7 @@ using WebApiPlayground.Models.Domain;
 
 namespace WebApiPlayground.Data
 {
-    public class WalksDbContext: DbContext
+    public class WalksDbContext : DbContext
     {
         private readonly IConfiguration _configuration;
 
