@@ -45,13 +45,13 @@ namespace WebApiPlayground.Repositories
 
         public async Task<Region?> DeleteRegionByIdAsync(Guid id)
         {
-            var regionDomain = await _dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
-            if (regionDomain == null)
+            var region = await _dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
+            if (region == null)
                 return null;
 
-            _dbContext.Regions.Remove(regionDomain);
+            _dbContext.Regions.Remove(region);
             await _dbContext.SaveChangesAsync();
-            return regionDomain;
+            return region;
         }
     }
 }

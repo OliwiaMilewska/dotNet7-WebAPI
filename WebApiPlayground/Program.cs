@@ -16,6 +16,7 @@ builder.Services.AddDbContext<WalksDbContext>();
 
 // Add Repositories
 builder.Services.AddScoped<IRegionRepository, SqlRegionRepository>();
+builder.Services.AddScoped<IWalkRepository, SqlWalkRepository>();
 
 // Add Auto Mapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));

@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using WebApiPlayground.Data;
 using WebApiPlayground.Models.Domain;
 using WebApiPlayground.Models.DTOs;
@@ -23,7 +22,7 @@ namespace WebApiPlayground.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("GetAllRegions")]
+        [HttpGet]
         public async Task<IActionResult> GetAllRegions()
         {
             // Get Data from Database
@@ -49,7 +48,7 @@ namespace WebApiPlayground.Controllers
             return Ok(regionsDto);
         }
 
-        [HttpGet("GetRegionById/{id:Guid}")]
+        [HttpGet("{id:Guid}")]
         public async Task<IActionResult> GetRegionById(Guid id)
         {
             var regionDomain = await _regionRepository.GetRegionByIdAsync(id);
@@ -61,8 +60,8 @@ namespace WebApiPlayground.Controllers
             return Ok(regionDto); // We can send empty Ok() so there is no need to create Dto.
         }
 
-        [HttpPost("CreateNewRegion")]
-        public async Task<IActionResult> CreateRegion(AddRegionRequestDto regionAddDto)
+        [HttpPost]
+        public async Task<IActionResult> CreateRegion([FromBody] AddRegionRequestDto regionAddDto)
         {
             var newRegion = _mapper.Map<Region>(regionAddDto);
             try
@@ -78,7 +77,7 @@ namespace WebApiPlayground.Controllers
             }
         }
 
-        [HttpPut("UpdateRegion/{id:Guid}")]
+        [HttpPut("{id:Guid}")]
         public async Task<IActionResult> UpdateRegion(Guid id, [FromBody] UpdateRegionDto regionUpdateDto)
         {
             var regionDomain = _mapper.Map<Region>(regionUpdateDto);
@@ -92,7 +91,7 @@ namespace WebApiPlayground.Controllers
             return Ok(regionDto);
         }
 
-        [HttpDelete("DeleteRegionById/{id:Guid}")]
+        [HttpDelete("{id:Guid}")]
         public async Task<IActionResult> DeleteRegionById(Guid id)
         {
             var regionDomain = await _regionRepository.DeleteRegionByIdAsync(id);

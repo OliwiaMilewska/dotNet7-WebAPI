@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebApiPlayground.Data;
 
@@ -11,9 +12,11 @@ using WebApiPlayground.Data;
 namespace WebApiPlayground.Migrations
 {
     [DbContext(typeof(WalksDbContext))]
-    partial class WalksDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230704124456_Seeding Data for Difficulties and Regions")]
+    partial class SeedingDataforDifficultiesandRegions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

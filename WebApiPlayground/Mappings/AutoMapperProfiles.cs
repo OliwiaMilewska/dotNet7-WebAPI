@@ -13,6 +13,11 @@ namespace WebApiPlayground.Mappings
             CreateMap<RegionDto,Region>().ReverseMap(); // DTO -> Domain Model and Domain Model -> DTO because of ReverseMap()
             CreateMap<AddRegionRequestDto,Region>().ReverseMap();
             CreateMap<UpdateRegionDto,Region>().ReverseMap();
+
+            CreateMap<WalkDto, Walk>().ReverseMap();
+            CreateMap<ModifyWalkDto,Walk>().ReverseMap();
+
+            CreateMap<DifficultyDto,Difficulty>().ReverseMap();
         }
     }
 
