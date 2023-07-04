@@ -1,4 +1,5 @@
 using WebApiPlayground.Data;
+using WebApiPlayground.Mappings;
 using WebApiPlayground.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,9 @@ builder.Services.AddDbContext<WalksDbContext>();
 
 // Add Repositories
 builder.Services.AddScoped<IRegionRepository, SqlRegionRepository>();
+
+// Add Auto Mapper
+builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
 var app = builder.Build();
 

@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using WebApiPlayground.Data;
 using WebApiPlayground.Models.Domain;
 using WebApiPlayground.Models.DTOs;
@@ -13,11 +14,13 @@ namespace WebApiPlayground.Controllers
     {
         private readonly WalksDbContext _dbContext;
         private readonly IRegionRepository _regionRepository;
+        private readonly IMapper _mapper;
 
-        public RegionController(WalksDbContext dbContext, IRegionRepository regionRepository)
+        public RegionController(WalksDbContext dbContext, IRegionRepository regionRepository, IMapper mapper)
         {
             _dbContext = dbContext;
             _regionRepository = regionRepository;
+            _mapper = mapper;
         }
 
         [HttpGet("GetAllRegions")]
@@ -25,9 +28,11 @@ namespace WebApiPlayground.Controllers
         {
             // Get Data from Database
             var regionsDomain = await _regionRepository.GetAllRegionsAsync();
+            if (regionsDomain.Count() == 0)
+                return NotFound();
 
             //Map Domain Models to DTOs
-            var regionsDto = new List<RegionDto>();
+            /*var regionsDto = new List<RegionDto>();
             foreach (var region in regionsDomain)
             {
                 regionsDto.Add(new RegionDto
@@ -37,7 +42,8 @@ namespace WebApiPlayground.Controllers
                     Code = region.Code,
                     RegionImageUrl = region.RegionImageUrl
                 });
-            }
+            }*/
+            var regionsDto = _mapper.Map<List<RegionDto>>(regionsDomain);
 
             // Return DTOs
             return Ok(regionsDto);
@@ -50,42 +56,20 @@ namespace WebApiPlayground.Controllers
             if (regionDomain == null)
                 return NotFound();
 
-            //Map Domain Models to DTOs
-            var regionDto = new RegionDto
-            {
-                Id = id,
-                Name = regionDomain.Name,
-                Code = regionDomain.Code,
-                RegionImageUrl = regionDomain.RegionImageUrl
-            };
-            return Ok(regionDto); // We can send empty Ok() so there is no need to create Dto
+            var regionDto = _mapper.Map<RegionDto>(regionDomain);
+
+            return Ok(regionDto); // We can send empty Ok() so there is no need to create Dto.
         }
 
         [HttpPost("CreateNewRegion")]
-        public async Task<IActionResult> PostRegion(AddRegionRequestDto regionAddDto)
+        public async Task<IActionResult> CreateRegion(AddRegionRequestDto regionAddDto)
         {
-            // Map DTO to Domain Model
-            var newRegion = new Region
-            {
-                Code = regionAddDto.Code,
-                Name = regionAddDto.Name,
-                RegionImageUrl = regionAddDto.RegionImageUrl
-            };
-
-            // Use Domain Model to create a Region
+            var newRegion = _mapper.Map<Region>(regionAddDto);
             try
             {
                 newRegion = await _regionRepository.CreateRegionAsync(newRegion);
-
-                // Map Domain model back to DTO
-                var regionDto = new RegionDto
-                {
-                    Id = newRegion.Id,
-                    Name = newRegion.Name,
-                    Code = newRegion.Code,
-                    RegionImageUrl = newRegion.RegionImageUrl
-                };
-                return CreatedAtAction(nameof(GetRegionById), new { id = newRegion.Id }, regionDto); // Returns 201 and Add 'Location' to 'Response Header'.
+                var regionDto = _mapper.Map<Region>(newRegion);
+                return CreatedAtAction(nameof(GetRegionById), new { id = newRegion.Id }, regionDto); // Returns 201 and Adds 'Location' to 'Response Header'.
                 //return Ok(regionDto ); returns 200 and the created Object
             }
             catch
@@ -97,26 +81,14 @@ namespace WebApiPlayground.Controllers
         [HttpPut("UpdateRegion/{id:Guid}")]
         public async Task<IActionResult> UpdateRegion(Guid id, [FromBody] UpdateRegionDto regionUpdateDto)
         {
-            // Map Dto to Domain model
-            var regionDomain = new Region
-            {
-                Name = regionUpdateDto.Name,
-                Code = regionUpdateDto.Code,
-                RegionImageUrl = regionUpdateDto.RegionImageUrl
-            };
+            var regionDomain = _mapper.Map<Region>(regionUpdateDto);
 
             var updatedRegion = await _regionRepository.UpdateRegionAsync(id, regionDomain);
             if (updatedRegion == null)
                 return NotFound();
 
-            // Map Domain to DTO
-            var regionDto = new RegionDto
-            {
-                Id = updatedRegion.Id,
-                Name = updatedRegion.Name,
-                Code = updatedRegion.Code,
-                RegionImageUrl = updatedRegion.RegionImageUrl
-            };
+            var regionDto = _mapper.Map<RegionDto>(updatedRegion);
+
             return Ok(regionDto);
         }
 
@@ -127,14 +99,7 @@ namespace WebApiPlayground.Controllers
             if (regionDomain == null)
                 return NotFound();
 
-            // Map Domain to DTO
-            var regionDto = new RegionDto
-            {
-                Id = regionDomain.Id,
-                Name = regionDomain.Name,
-                Code = regionDomain.Code,
-                RegionImageUrl = regionDomain.RegionImageUrl
-            };
+            var regionDto = _mapper.Map<RegionDto>(regionDomain);
             return Ok(regionDto);
         }
     }
