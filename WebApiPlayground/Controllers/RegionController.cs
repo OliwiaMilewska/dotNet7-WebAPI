@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using WebApiPlayground.Data;
 using WebApiPlayground.Models.Domain;
 using WebApiPlayground.Models.DTOs;
@@ -16,10 +17,10 @@ namespace WebApiPlayground.Controllers
         }
 
         [HttpGet("GetAllRegions")]
-        public IActionResult GetAllRegions()
+        public async Task<IActionResult> GetAllRegions()
         {
             // Get Data from Database
-            var regionsDomain = _dbContext.Regions.ToList();
+            var regionsDomain = await _dbContext.Regions.ToListAsync();
 
             //Map Domain Models to DTOs
             var regionsDto = new List<RegionDto>();
@@ -39,9 +40,9 @@ namespace WebApiPlayground.Controllers
         }
 
         [HttpGet("GetRegionById/{id:Guid}")]
-        public IActionResult GetRegionById(Guid id)
+        public async Task<IActionResult> GetRegionById(Guid id)
         {
-            var regionDomain = _dbContext.Regions.FirstOrDefault(x => x.Id == id);
+            var regionDomain = await _dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
             if (regionDomain == null)
                 return NotFound();
 
@@ -57,7 +58,7 @@ namespace WebApiPlayground.Controllers
         }
 
         [HttpPost("CreateNewRegion")]
-        public IActionResult PostRegion(AddRegionRequestDto regionAddDto)
+        public async Task<IActionResult> PostRegion(AddRegionRequestDto regionAddDto)
         {
             // Map DTO to Domain Model
             var newRegion = new Region
@@ -70,8 +71,8 @@ namespace WebApiPlayground.Controllers
             // Use Domain Model to create a Region
             try
             {
-                _dbContext.Regions.Add(newRegion);
-                _dbContext.SaveChanges();
+                await _dbContext.Regions.AddAsync(newRegion);
+                await _dbContext.SaveChangesAsync();
 
                 // Map Domain model back to DTO
                 var regionDto = new RegionDto
@@ -91,9 +92,9 @@ namespace WebApiPlayground.Controllers
         }
 
         [HttpPut("UpdateRegion/{id:Guid}")]
-        public IActionResult UpdateRegion(Guid id, [FromBody] UpdateRegionDto regionUpdateDto)
+        public async Task<IActionResult> UpdateRegion(Guid id, [FromBody] UpdateRegionDto regionUpdateDto)
         {
-            var regionDomain = _dbContext.Regions.FirstOrDefault(x => x.Id == id);
+            var regionDomain = await _dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
             if (regionDomain == null)
                 return NotFound();
 
@@ -104,7 +105,7 @@ namespace WebApiPlayground.Controllers
 
             try
             {
-                _dbContext.SaveChanges();
+                await _dbContext.SaveChangesAsync();
 
                 //Convert Domain Model to DTO
                 var regionDto = new RegionDto
@@ -123,16 +124,16 @@ namespace WebApiPlayground.Controllers
         }
 
         [HttpDelete("DeleteRegionById/{id:Guid}")]
-        public IActionResult DeleteRegionById(Guid id)
+        public async Task<IActionResult> DeleteRegionById(Guid id)
         {
-            var regionDomain = _dbContext.Regions.FirstOrDefault(x => x.Id == id);
+            var regionDomain = await _dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
             if (regionDomain == null)
                 return NotFound();
 
             try
             {
-                _dbContext.Regions.Remove(regionDomain);
-                _dbContext.SaveChanges();
+                _dbContext.Regions.Remove(regionDomain); // Remove doesn't have a async method.
+                await _dbContext.SaveChangesAsync();
                 return Ok();
             }
             catch
