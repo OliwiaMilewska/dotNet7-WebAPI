@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using WebApiPlayground.CustomActionFilters;
 using WebApiPlayground.Data;
 using WebApiPlayground.Models.Domain;
 using WebApiPlayground.Models.DTOs;
@@ -61,6 +62,7 @@ namespace WebApiPlayground.Controllers
         }
 
         [HttpPost]
+        [ValidateModel]
         public async Task<IActionResult> CreateRegion([FromBody] AddRegionRequestDto regionAddDto)
         {
             var newRegion = _mapper.Map<Region>(regionAddDto);
@@ -68,8 +70,7 @@ namespace WebApiPlayground.Controllers
             {
                 newRegion = await _regionRepository.CreateRegionAsync(newRegion);
                 var regionDto = _mapper.Map<Region>(newRegion);
-                return CreatedAtAction(nameof(GetRegionById), new { id = newRegion.Id }, regionDto); // Returns 201 and Adds 'Location' to 'Response Header'.
-                //return Ok(regionDto ); returns 200 and the created Object
+                return CreatedAtAction(nameof(GetRegionById), new { id = newRegion.Id }, regionDto); // Returns 201 and Adds 'Location' to 'Response Header'.                                                                                 //return Ok(regionDto ); returns 200 and the created Object
             }
             catch
             {
@@ -78,6 +79,7 @@ namespace WebApiPlayground.Controllers
         }
 
         [HttpPut("{id:Guid}")]
+        [ValidateModel]
         public async Task<IActionResult> UpdateRegion(Guid id, [FromBody] UpdateRegionDto regionUpdateDto)
         {
             var regionDomain = _mapper.Map<Region>(regionUpdateDto);

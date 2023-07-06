@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using WebApiPlayground.CustomActionFilters;
 using WebApiPlayground.Models.Domain;
 using WebApiPlayground.Models.DTOs;
 using WebApiPlayground.Repositories;
@@ -13,13 +14,15 @@ namespace WebApiPlayground.Controllers
         private readonly IMapper _mapper;
         private readonly IWalkRepository _walkRepository;
 
-        public WalksController(IMapper mapper, IWalkRepository walkRepository) {
+        public WalksController(IMapper mapper, IWalkRepository walkRepository)
+        {
             _walkRepository = walkRepository;
             _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllWalks() {
+        public async Task<IActionResult> GetAllWalks()
+        {
             var walksDomain = await _walkRepository.GetAllWalksAsync();
             var walksDto = _mapper.Map<List<WalkDto>>(walksDomain);
             return Ok(walksDto);
@@ -38,6 +41,7 @@ namespace WebApiPlayground.Controllers
         }
 
         [HttpPost]
+        [ValidateModel]
         public async Task<IActionResult> CreateWalk([FromBody] ModifyWalkDto newWalk)
         {
             var walkDomainModel = _mapper.Map<Walk>(newWalk);
@@ -47,6 +51,7 @@ namespace WebApiPlayground.Controllers
         }
 
         [HttpPut("{id:Guid}")]
+        [ValidateModel]
         public async Task<IActionResult> UpdateWalk(Guid id, [FromBody] ModifyWalkDto walkModifyDto)
         {
             var walkDomain = _mapper.Map<Walk>(walkModifyDto);
