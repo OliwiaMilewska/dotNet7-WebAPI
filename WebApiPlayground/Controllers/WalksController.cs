@@ -21,9 +21,10 @@ namespace WebApiPlayground.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllWalks()
+        // GET: /api/walks?filterOn=Name&filterQuery=Track
+        public async Task<IActionResult> GetAllWalks([FromQuery] string? filterOn, [FromQuery] string? filterQuery)
         {
-            var walksDomain = await _walkRepository.GetAllWalksAsync();
+            var walksDomain = await _walkRepository.GetAllWalksAsync(filterOn, filterQuery);
             var walksDto = _mapper.Map<List<WalkDto>>(walksDomain);
             return Ok(walksDto);
         }

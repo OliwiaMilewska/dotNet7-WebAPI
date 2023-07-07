@@ -12,9 +12,30 @@ namespace WebApiPlayground.Repositories
             _dbContext = context;
         }
 
-        public async Task<List<Walk>> GetAllWalksAsync()
+        public async Task<List<Walk>> GetAllWalksAsync(string? filterOn = null, string? filterQuery = null)
         {
-            return await _dbContext.Walks.Include(x => x.Difficulty).Include(x => x.Region).ToListAsync();
+            var walks = _dbContext.Walks
+                .Include(x => x.Difficulty)
+                .Include(x => x.Region)
+                .AsQueryable();
+
+            // Filtering
+            if (string.IsNullOrWhiteSpace(filterOn) == false && string.IsNullOrWhiteSpace(filterQuery) == false)
+            {
+                switch (filterOn.ToLower())
+                {
+                    case "name":
+                        walks = walks.Where(x => x.Name.Contains(filterQuery));
+                        break;
+                    case "length":
+                        walks = walks.Where(x => x.LengthInKm == Double.Parse(filterQuery));
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            return await walks.ToListAsync();
         }
 
         public async Task<Walk?> GetWalkByIdAsync(Guid id)
