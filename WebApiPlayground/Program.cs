@@ -16,6 +16,7 @@ builder.Services.AddSwaggerGen();
 
 // Add db context
 builder.Services.AddDbContext<WalksDbContext>();
+builder.Services.AddDbContext<WalksAuthDbContext>();
 
 // Add Repositories
 builder.Services.AddScoped<IRegionRepository, SqlRegionRepository>();

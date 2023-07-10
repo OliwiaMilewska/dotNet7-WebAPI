@@ -7,7 +7,7 @@ namespace WebApiPlayground.Data
     {
         private readonly IConfiguration _configuration;
 
-        public WalksDbContext(DbContextOptions dbContextOptions, IConfiguration configuration) : base(dbContextOptions)
+        public WalksDbContext(DbContextOptions<WalksDbContext> dbContextOptions, IConfiguration configuration) : base(dbContextOptions)
         {
             _configuration = configuration;
         }
