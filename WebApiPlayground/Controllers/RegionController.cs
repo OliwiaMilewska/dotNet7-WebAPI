@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApiPlayground.CustomActionFilters;
 using WebApiPlayground.Data;
@@ -10,6 +11,7 @@ namespace WebApiPlayground.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class RegionController : ControllerBase
     {
         private readonly WalksDbContext _dbContext;
