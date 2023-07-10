@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Globalization;
 using WebApiPlayground.Data;
 using WebApiPlayground.Models.Domain;
 
@@ -13,7 +12,8 @@ namespace WebApiPlayground.Repositories
             _dbContext = context;
         }
 
-        public async Task<List<Walk>> GetAllWalksAsync(string? filterOn = null, string? filterQuery = null, string? sortBy = null, bool isAscending = true)
+        public async Task<List<Walk>> GetAllWalksAsync(string? filterOn = null, string? filterQuery = null, string? sortBy = null, bool isAscending = true,
+            int pageNumber = 1, int pageSize = 1000)
         {
             var walks = _dbContext.Walks
                 .Include(x => x.Difficulty)
@@ -21,8 +21,8 @@ namespace WebApiPlayground.Repositories
                 .AsQueryable();
 
             walks = FilterWalks(filterOn, filterQuery, walks);
-
             walks = SortWalks(sortBy, isAscending, walks);
+            walks = PaginationWalks(pageNumber, pageSize, walks);
 
             return await walks.ToListAsync();
         }
@@ -43,7 +43,6 @@ namespace WebApiPlayground.Repositories
                         break;
                 }
             }
-
             return walks;
         }
 
@@ -63,7 +62,13 @@ namespace WebApiPlayground.Repositories
                         break;
                 }
             }
+            return walks;
+        }
 
+        private static IQueryable<Walk> PaginationWalks(int pageNumber, int pageSize, IQueryable<Walk> walks)
+        {
+            var skipResult = (pageNumber - 1) * pageSize;
+            walks = walks.Skip(skipResult).Take(pageSize);
             return walks;
         }
 
