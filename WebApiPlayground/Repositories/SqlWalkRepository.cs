@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using WebApiPlayground.Data;
 using WebApiPlayground.Models.Domain;
 
@@ -12,14 +13,22 @@ namespace WebApiPlayground.Repositories
             _dbContext = context;
         }
 
-        public async Task<List<Walk>> GetAllWalksAsync(string? filterOn = null, string? filterQuery = null)
+        public async Task<List<Walk>> GetAllWalksAsync(string? filterOn = null, string? filterQuery = null, string? sortBy = null, bool isAscending = true)
         {
             var walks = _dbContext.Walks
                 .Include(x => x.Difficulty)
                 .Include(x => x.Region)
                 .AsQueryable();
 
-            // Filtering
+            walks = FilterWalks(filterOn, filterQuery, walks);
+
+            walks = SortWalks(sortBy, isAscending, walks);
+
+            return await walks.ToListAsync();
+        }
+
+        private static IQueryable<Walk> FilterWalks(string? filterOn, string? filterQuery, IQueryable<Walk> walks)
+        {
             if (string.IsNullOrWhiteSpace(filterOn) == false && string.IsNullOrWhiteSpace(filterQuery) == false)
             {
                 switch (filterOn.ToLower())
@@ -35,7 +44,27 @@ namespace WebApiPlayground.Repositories
                 }
             }
 
-            return await walks.ToListAsync();
+            return walks;
+        }
+
+        private static IQueryable<Walk> SortWalks(string? sortBy, bool isAscending, IQueryable<Walk> walks)
+        {
+            if (string.IsNullOrWhiteSpace(sortBy) == false)
+            {
+                switch (sortBy.ToLower())
+                {
+                    case "name":
+                        walks = isAscending ? walks.OrderBy(x => x.Name) : walks.OrderByDescending(x => x.Name);
+                        break;
+                    case "length":
+                        walks = isAscending ? walks.OrderBy(x => x.LengthInKm) : walks.OrderByDescending(x => x.LengthInKm);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            return walks;
         }
 
         public async Task<Walk?> GetWalkByIdAsync(Guid id)
