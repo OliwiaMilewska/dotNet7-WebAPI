@@ -22,6 +22,7 @@ builder.Services.AddDbContext<WalksAuthDbContext>();
 // Add Repositories
 builder.Services.AddScoped<IRegionRepository, SqlRegionRepository>();
 builder.Services.AddScoped<IWalkRepository, SqlWalkRepository>();
+builder.Services.AddScoped<ITokenRepository, TokenRepository>();
 
 // Add Auto Mapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
