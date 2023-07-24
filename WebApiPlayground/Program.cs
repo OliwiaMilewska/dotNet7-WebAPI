@@ -1,15 +1,24 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
 using System.Text;
 using WebApiPlayground.Data;
 using WebApiPlayground.Mappings;
 using WebApiPlayground.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add Logging
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(
+    new LoggerConfiguration()
+    .WriteTo.Console()
+    .MinimumLevel.Information()
+    .CreateLogger()
+);
 
 builder.Services.AddControllers();
 

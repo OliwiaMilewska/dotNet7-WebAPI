@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 using WebApiPlayground.CustomActionFilters;
 using WebApiPlayground.Data;
 using WebApiPlayground.Models.Domain;
@@ -16,39 +17,57 @@ namespace WebApiPlayground.Controllers
         private readonly WalksDbContext _dbContext;
         private readonly IRegionRepository _regionRepository;
         private readonly IMapper _mapper;
+        private readonly ILogger<RegionController> _logger;
 
-        public RegionController(WalksDbContext dbContext, IRegionRepository regionRepository, IMapper mapper)
+        public RegionController(WalksDbContext dbContext, IRegionRepository regionRepository, IMapper mapper, ILogger<RegionController> logger)
         {
             _dbContext = dbContext;
             _regionRepository = regionRepository;
             _mapper = mapper;
+            _logger = logger;
         }
 
         [HttpGet]
         [Authorize(Roles = "Reader, Writer")]
         public async Task<IActionResult> GetAllRegions()
         {
-            // Get Data from Database
-            var regionsDomain = await _regionRepository.GetAllRegionsAsync();
-            if (regionsDomain.Count() == 0)
-                return NotFound();
-
-            //Map Domain Models to DTOs
-            /*var regionsDto = new List<RegionDto>();
-            foreach (var region in regionsDomain)
+            try
             {
-                regionsDto.Add(new RegionDto
-                {
-                    Id = region.Id,
-                    Name = region.Name,
-                    Code = region.Code,
-                    RegionImageUrl = region.RegionImageUrl
-                });
-            }*/
-            var regionsDto = _mapper.Map<List<RegionDto>>(regionsDomain);
+                //throw new Exception("This is a testing error");
 
-            // Return DTOs
-            return Ok(regionsDto);
+                _logger.LogInformation("Getting all regions ...");
+                // Get Data from Database
+                var regionsDomain = await _regionRepository.GetAllRegionsAsync();
+                if (regionsDomain.Count() == 0)
+                    return NotFound();
+
+                //Map Domain Models to DTOs
+                /*var regionsDto = new List<RegionDto>();
+                foreach (var region in regionsDomain)
+                {
+                    regionsDto.Add(new RegionDto
+                    {
+                        Id = region.Id,
+                        Name = region.Name,
+                        Code = region.Code,
+                        RegionImageUrl = region.RegionImageUrl
+                    });
+                }*/
+                var regionsDto = _mapper.Map<List<RegionDto>>(regionsDomain);
+                _logger.LogInformation($"Finished GetAllRegions request with data: {JsonSerializer.Serialize(regionsDto)}");
+
+                _logger.LogDebug("Test Debug");
+                _logger.LogWarning("Test Warning");
+
+                // Return DTOs
+                return Ok(regionsDto);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError("Test Error"+ex);
+                _logger.LogCritical("Test Critical"+ex);
+                throw;
+            }
         }
 
         [HttpGet("{id:Guid}")]
