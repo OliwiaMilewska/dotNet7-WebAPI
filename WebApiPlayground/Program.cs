@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
@@ -32,6 +31,12 @@ builder.Logging.AddSerilog(
 );
 
 builder.Services.AddControllers();
+
+// Add versioning 
+builder.Services.AddApiVersioning(options =>
+{
+    options.AssumeDefaultVersionWhenUnspecified = true;
+});
 
 builder.Services.AddHttpContextAccessor();
 

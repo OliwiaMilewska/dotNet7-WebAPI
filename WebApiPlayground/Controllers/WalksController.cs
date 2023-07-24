@@ -7,8 +7,11 @@ using WebApiPlayground.Repositories;
 
 namespace WebApiPlayground.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
+    [ApiVersion("1.0")]
+    [ApiVersion("2.0")]
+    [ApiVersion("3.0")]
     public class WalksController : ControllerBase
     {
         private readonly IMapper _mapper;
@@ -23,15 +26,40 @@ namespace WebApiPlayground.Controllers
         }
 
         [HttpGet]
+        [MapToApiVersion("1.0")]
         // GET: /api/walks?filterOn=Name&filterQuery=Track&sortBy=Name&isAscending=true&pageNumber=1&pageSize=10
-        public async Task<IActionResult> GetAllWalks([FromQuery] string? filterOn, [FromQuery] string? filterQuery, [FromQuery] string? sortBy, [FromQuery] bool isAscending,
+        public async Task<IActionResult> GetAllWalksV1([FromQuery] string? filterOn, [FromQuery] string? filterQuery, [FromQuery] string? sortBy, [FromQuery] bool isAscending,
             [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 1000)
         {
             var walksDomain = await _walkRepository.GetAllWalksAsync(filterOn, filterQuery, sortBy, isAscending, pageNumber, pageSize);
-            var walksDto = _mapper.Map<List<WalkDto>>(walksDomain);
+            var walksDto = _mapper.Map<List<WalkDtoV1>>(walksDomain);
+
+            return Ok(walksDto);
+        }
+
+        [HttpGet]
+        [MapToApiVersion("2.0")]
+        // GET: /api/walks?filterOn=Name&filterQuery=Track&sortBy=Name&isAscending=true&pageNumber=1&pageSize=10
+        public async Task<IActionResult> GetAllWalksV2([FromQuery] string? filterOn, [FromQuery] string? filterQuery, [FromQuery] string? sortBy, [FromQuery] bool isAscending,
+            [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 1000)
+        {
+            var walksDomain = await _walkRepository.GetAllWalksAsync(filterOn, filterQuery, sortBy, isAscending, pageNumber, pageSize);
+            var walksDto = _mapper.Map<List<WalkDtoV1>>(walksDomain);
 
             // Testing middleware
             throw new Exception("This is testing exception");
+
+            return Ok(walksDto);
+        }
+
+        [HttpGet]
+        [MapToApiVersion("3.0")]
+        // GET: /api/walks?filterOn=Name&filterQuery=Track&sortBy=Name&isAscending=true&pageNumber=1&pageSize=10
+        public async Task<IActionResult> GetAllWalksV3([FromQuery] string? filterOn, [FromQuery] string? filterQuery, [FromQuery] string? sortBy, [FromQuery] bool isAscending,
+            [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 1000)
+        {
+            var walksDomain = await _walkRepository.GetAllWalksAsync(filterOn, filterQuery, sortBy, isAscending, pageNumber, pageSize);
+            var walksDto = _mapper.Map<List<WalkDtoV2>>(walksDomain);
 
             return Ok(walksDto);
         }
@@ -43,7 +71,7 @@ namespace WebApiPlayground.Controllers
             if (walkDomain == null)
                 return NotFound();
 
-            var walkDto = _mapper.Map<WalkDto>(walkDomain);
+            var walkDto = _mapper.Map<WalkDtoV1>(walkDomain);
 
             return Ok(walkDto);
         }
@@ -54,7 +82,7 @@ namespace WebApiPlayground.Controllers
         {
             var walkDomainModel = _mapper.Map<Walk>(newWalk);
             walkDomainModel = await _walkRepository.CreateWalkAsync(walkDomainModel);
-            var walkDto = _mapper.Map<WalkDto>(walkDomainModel);
+            var walkDto = _mapper.Map<WalkDtoV1>(walkDomainModel);
             return Ok(walkDto);
         }
 
@@ -67,7 +95,7 @@ namespace WebApiPlayground.Controllers
             if (walkDomain == null)
                 return NotFound();
 
-            var walkDto = _mapper.Map<WalkDto>(walkDomain);
+            var walkDto = _mapper.Map<WalkDtoV1>(walkDomain);
             return Ok(walkDto);
         }
 
@@ -78,7 +106,7 @@ namespace WebApiPlayground.Controllers
             if (walkDomain == null)
                 return NotFound();
 
-            var walkDto = _mapper.Map<WalkDto>(walkDomain);
+            var walkDto = _mapper.Map<WalkDtoV1>(walkDomain);
             return Ok(walkDto);
         }
     }

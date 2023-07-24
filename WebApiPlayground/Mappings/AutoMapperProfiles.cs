@@ -14,8 +14,9 @@ namespace WebApiPlayground.Mappings
             CreateMap<AddRegionRequestDto,Region>().ReverseMap();
             CreateMap<UpdateRegionDto,Region>().ReverseMap();
 
-            CreateMap<WalkDto, Walk>().ReverseMap();
+            CreateMap<WalkDtoV1, Walk>().ReverseMap();
             CreateMap<ModifyWalkDto,Walk>().ReverseMap();
+            CreateMap<WalkDtoV2, Walk>().ForMember(x => x.Name, opt => opt.MapFrom(z => z.NameOfWalk)).ReverseMap();
 
             CreateMap<DifficultyDto,Difficulty>().ReverseMap();
 
