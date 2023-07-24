@@ -1,12 +1,15 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
+using Serilog.Events;
 using System.Text;
 using WebApiPlayground.Data;
 using WebApiPlayground.Mappings;
+using WebApiPlayground.Middlewares;
 using WebApiPlayground.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,9 +18,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(
     new LoggerConfiguration()
-    .WriteTo.Console()
-    .MinimumLevel.Information()
-    .CreateLogger()
+            .MinimumLevel.Error()
+            .WriteTo.MSSqlServer(
+                connectionString: builder.Configuration["ConnectionStrings:WalksConnectionString"],
+                tableName: "Logs",
+                autoCreateSqlTable: true, 
+                restrictedToMinimumLevel: LogEventLevel.Information)
+            .WriteTo.Console()
+            .CreateLogger()
 );
 
 builder.Services.AddControllers();
@@ -114,6 +122,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Adds Middleware
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 

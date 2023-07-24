@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 using WebApiPlayground.CustomActionFilters;
 using WebApiPlayground.Models.Domain;
 using WebApiPlayground.Models.DTOs;
@@ -13,10 +14,12 @@ namespace WebApiPlayground.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IWalkRepository _walkRepository;
+        private readonly ILogger<WalksController> _logger;
 
-        public WalksController(IMapper mapper, IWalkRepository walkRepository)
+        public WalksController(IMapper mapper, IWalkRepository walkRepository, ILogger<WalksController> logger)
         {
             _walkRepository = walkRepository;
+            _logger = logger;
             _mapper = mapper;
         }
 
@@ -27,6 +30,10 @@ namespace WebApiPlayground.Controllers
         {
             var walksDomain = await _walkRepository.GetAllWalksAsync(filterOn, filterQuery, sortBy, isAscending, pageNumber, pageSize);
             var walksDto = _mapper.Map<List<WalkDto>>(walksDomain);
+
+            // Testing middleware
+            throw new Exception("This is testing exception");
+
             return Ok(walksDto);
         }
 
