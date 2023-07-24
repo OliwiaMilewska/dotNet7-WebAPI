@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -7,6 +8,7 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.MSSqlServer;
 using System.Text;
+using WebApiPlayground;
 using WebApiPlayground.Data;
 using WebApiPlayground.Mappings;
 using WebApiPlayground.Middlewares;
@@ -36,6 +38,13 @@ builder.Services.AddControllers();
 builder.Services.AddApiVersioning(options =>
 {
     options.AssumeDefaultVersionWhenUnspecified = true;
+    options.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
+    options.ReportApiVersions = true;
+});
+builder.Services.AddVersionedApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
 });
 
 builder.Services.AddHttpContextAccessor();
@@ -44,12 +53,6 @@ builder.Services.AddEndpointsApiExplorer();
 // Add Auth in Swagger
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "NZ Walks API",
-        Version = "v1"
-    });
-
     options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -75,6 +78,8 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
+
+builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 
 // Add db context
 builder.Services.AddDbContext<WalksDbContext>();
@@ -124,11 +129,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 var app = builder.Build();
 
+var versionDescriptionProvider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI( options =>
+    {
+        foreach(var item in versionDescriptionProvider.ApiVersionDescriptions)
+        {
+            options.SwaggerEndpoint($"/swagger/{item.GroupName}/swagger.json",
+                item.GroupName.ToUpperInvariant());
+        }
+    });
 }
 
 // Adds Middleware
