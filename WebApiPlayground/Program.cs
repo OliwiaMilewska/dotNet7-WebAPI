@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using Serilog.Events;
+using Serilog.Sinks.MSSqlServer;
 using System.Text;
 using WebApiPlayground.Data;
 using WebApiPlayground.Mappings;
@@ -18,13 +19,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(
     new LoggerConfiguration()
-            .MinimumLevel.Error()
+            .MinimumLevel.Information()
+            .WriteTo.Console()
             .WriteTo.MSSqlServer(
                 connectionString: builder.Configuration["ConnectionStrings:WalksConnectionString"],
-                tableName: "Logs",
-                autoCreateSqlTable: true, 
-                restrictedToMinimumLevel: LogEventLevel.Information)
-            .WriteTo.Console()
+                sinkOptions: new MSSqlServerSinkOptions { 
+                    TableName = "Logs",
+                    AutoCreateSqlTable = true
+                },
+                restrictedToMinimumLevel: LogEventLevel.Error)
             .CreateLogger()
 );
 

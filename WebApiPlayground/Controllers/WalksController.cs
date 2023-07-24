@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 using WebApiPlayground.CustomActionFilters;
 using WebApiPlayground.Models.Domain;
 using WebApiPlayground.Models.DTOs;
