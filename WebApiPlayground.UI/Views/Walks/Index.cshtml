@@ -5,16 +5,22 @@
 
 <h1 class="mt-3">Walks</h1>
 
+<div class="d-flex justify-content-end m-3">
+    <a class="btn btn-primary" asp-action="Add" asp-controller="Walks">Add Walk</a>
+</div>
+
 <table class="table table-bordered table-info">
     <thead>
         <tr>
-            <td>Id</td>
-            <td>Name</td>
-            <td>Description</td>
-            <td>LengthInKm</td>
-            <td>Image</td>
-            <td>Region</td>
-            <td>Difficulty</td>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>LengthInKm</th>
+            <th>Image</th>
+            <th>Region</th>
+            <th>Difficulty</th>
+            <th> </th>
+            <th> </th>
         </tr>
     </thead>
     <tbody>
@@ -28,6 +34,12 @@
                 <td>@walk.WalkImageUrl</td>
                 <td>@walk.Region.Name</td>
                 <td>@walk.Difficulty.Name</td>
+                <td>
+                    <a class="btn btn-light" asp-controller="Walks" asp-action="Edit" asp-route-id="@walk.Id"> Edit </a>
+                </td>
+                <td>
+                    <a class="btn btn-danger" asp-controller="Walks" asp-action="Delete" asp-route-id="@walk.Id"> Delete </a>
+                </td>
             </tr>
         }
     </tbody>

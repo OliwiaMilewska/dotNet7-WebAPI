@@ -16,12 +16,10 @@ namespace WebApiPlayground.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IWalkRepository _walkRepository;
-        private readonly ILogger<WalksController> _logger;
 
-        public WalksController(IMapper mapper, IWalkRepository walkRepository, ILogger<WalksController> logger)
+        public WalksController(IMapper mapper, IWalkRepository walkRepository)
         {
             _walkRepository = walkRepository;
-            _logger = logger;
             _mapper = mapper;
         }
 
