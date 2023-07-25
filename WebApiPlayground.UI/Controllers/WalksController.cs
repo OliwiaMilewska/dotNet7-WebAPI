@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Net.Http;
-using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using WebApiPlayground.UI.Models;
@@ -80,7 +78,8 @@ namespace WebApiPlayground.UI.Controllers
         {
             var walk = await _httpClient.GetFromJsonAsync<WalkDto>($"https://localhost:7015/api/v1/Walks/{walkDomain.Id}");
 
-            var walkDto = new AddWalkViewModel { 
+            var walkDto = new AddWalkViewModel
+            {
                 Description = walkDomain.Description,
                 Name = walkDomain.Name,
                 LengthInKm = walkDomain.LengthInKm,
